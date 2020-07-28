@@ -1,7 +1,9 @@
-const babel = require('@babel/core')
-const React = require('react')
-const fs = require('fs')
 const path = require('path')
+const fs = require('fs-extra');
+const Mustache = require('mustache');
+const babel = require('@babel/core')
+const {html:beautifyHtml} = require('js-beautify');
+const React = require('react')
 const {renderToStaticMarkup} = require('react-dom/server')
 const mdx = require('@mdx-js/mdx')
 const {MDXProvider, mdx: createElement} = require('@mdx-js/react')
@@ -25,8 +27,6 @@ const renderWithReact = async mdxCode => {
   )
   const element = fn(React, ...Object.values(scope))
   const components = {
-    h1: ({children}) =>
-      React.createElement('h1', {style: {color: 'tomato'}}, children)
   }
   const elementWithProvider = React.createElement(
     MDXProvider,
@@ -36,7 +36,17 @@ const renderWithReact = async mdxCode => {
   return renderToStaticMarkup(elementWithProvider)
 }
 
-const main = fs.readFileSync(path.join(__dirname, '../src/main.mdx'), { encoding: 'utf8' });
 (async () => {
-    console.log(await renderWithReact(main));
+  const srcRoot = path.join(__dirname, '../src/');
+  const outputRoot = path.join(__dirname, '../pages');
+  const staticRoot = path.join(__dirname, '../static');
+
+  const main = await fs.readFile(path.join(srcRoot, 'main.mdx'), { encoding: 'utf8' });
+
+  const content = await renderWithReact(main);
+  const template = await fs.readFile(path.join(srcRoot, 'template.html.mustache'), { encoding: 'utf8' });
+  const html = Mustache.render(template, { content });
+  await fs.emptyDir(outputRoot);
+  await fs.copy(staticRoot, outputRoot);
+  await fs.writeFile(path.join(outputRoot, 'index.html'), beautifyHtml(html), { encoding: 'utf8' });
 })();

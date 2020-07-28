@@ -4,6 +4,7 @@
   "main": "index.js",
   "repository": "git@github.com:flut1/mdx-static.git",
   "scripts": {
+    "prettify": "prettier --write \"(src|script)/**.(js|mdx)\"",
     "render": "node ./scripts/render.js"
   },
   "dependencies": {
@@ -15,6 +16,10 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.10.4",
     "@babel/plugin-transform-react-jsx": "^7.10.4",
     "@mdx-js/mdx": "^1.6.14",
-    "@mdx-js/react": "^1.6.14"
+    "@mdx-js/react": "^1.6.14",
+    "fs-extra": "^9.0.1",
+    "js-beautify": "^1.11.0",
+    "mustache": "^4.0.1",
+    "prettier": "^2.0.5"
   }
 }
