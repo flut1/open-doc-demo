@@ -28,7 +28,7 @@ const renderWithReact = async (filepath) => {
 
 (async () => {
   const srcRoot = path.join(__dirname, "../src/");
-  const outputRoot = path.join(__dirname, "../pages");
+  const outputRoot = path.join(__dirname, "../docs");
   const staticRoot = path.join(__dirname, "../static");
 
   const content = await renderWithReact(path.join(srcRoot, "main.mdx"));
