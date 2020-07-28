@@ -8,7 +8,7 @@ const React = require("react");
 
 const renderWithReact = async (filepath) => {
   const { options, warnings } = await loadConfigFile(
-    path.resolve(__dirname, "../rollup.config.js"),
+    path.resolve(__dirname, "../rollup.config.js")
   );
   if (warnings.count) {
     console.log(`We currently have ${warnings.count} warnings`);
@@ -21,8 +21,8 @@ const renderWithReact = async (filepath) => {
     })
   );
 
-  const content = require('../tmp/bundle').render();
-  await fs.remove(path.join(__dirname, '../tmp'));
+  const content = require("../tmp/bundle").render();
+  await fs.remove(path.join(__dirname, "../tmp"));
   return content;
 };
 

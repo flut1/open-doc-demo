@@ -5,11 +5,14 @@
   "repository": "git@github.com:flut1/open-doc-demo.git",
   "scripts": {
     "prettify": "prettier --write \"(src|scripts)/**.(js|mdx)\"",
-    "render": "node ./scripts/render.js"
+    "render:html": "node ./scripts/render.js",
+    "render:pdf": "node ./scripts/print.js",
+    "render": "npm run render:html && npm run render:pdf"
   },
   "dependencies": {
     "@babel/preset-react": "^7.10.4",
     "mustache": "^4.0.1",
+    "puppeteer": "^5.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1"
   },
