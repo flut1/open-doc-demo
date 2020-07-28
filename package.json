@@ -1,8 +1,8 @@
 {
-  "name": "mdx-static",
+  "name": "open-doc-demo",
   "version": "1.0.0",
   "main": "index.js",
-  "repository": "git@github.com:flut1/mdx-static.git",
+  "repository": "git@github.com:flut1/open-doc-demo.git",
   "scripts": {
     "prettify": "prettier --write \"(src|scripts)/**.(js|mdx)\"",
     "render": "node ./scripts/render.js"
