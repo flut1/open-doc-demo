@@ -1,11 +1,14 @@
 const path = require("path");
 const fs = require("fs-extra");
+const util = require('util');
 const Mustache = require("mustache");
 const rollup = require("rollup");
 const loadConfigFile = require("rollup/dist/loadConfigFile");
 const { html: beautifyHtml } = require("js-beautify");
 const React = require("react");
-const languages = require('../languages');
+const languages = require("../languages");
+const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
+const { format: formatDate } = require("date-fns");
 
 const SRC_ROOT = path.join(__dirname, "../src/");
 const OUTPUT_ROOT = path.join(__dirname, "../docs");
@@ -30,25 +33,35 @@ const bundleMdxRender = async () => {
 
 const clearBundles = () => fs.remove(TMP_OUTPUT_ROOT);
 
-const createHtml = async (template, content, language) => {
+const createHtml = async (template, content, { htmlOutputFile }) => {
   const html = Mustache.render(template, { content });
-  await fs.writeFile(path.join(OUTPUT_ROOT, `${language}.html`), beautifyHtml(html), {
-    encoding: "utf8",
-  });
-}
+  await fs.writeFile(
+    path.join(OUTPUT_ROOT, htmlOutputFile),
+    beautifyHtml(html),
+    {
+      encoding: "utf8",
+    }
+  );
+};
 
 (async () => {
   await bundleMdxRender();
 
   const template = await fs.readFile(
-      path.join(SRC_ROOT, "template.html.mustache"),
-      { encoding: "utf8" }
+    path.join(SRC_ROOT, "template.html.mustache"),
+    { encoding: "utf8" }
   );
 
   await fs.emptyDir(OUTPUT_ROOT);
   await fs.copy(STATIC_ROOT, OUTPUT_ROOT);
   for (const language of languages) {
-    const content = require(`../tmp/bundle.${language}`).render();
+    const lastCommit = await getLastCommit();
+    const buildDate = formatDate(
+      new Date(parseInt(lastCommit.committedOn, 10) * 1000),
+      "PPPpp",
+      { locale: require(`date-fns/locale/${language.dateFormatting}`) }
+    );
+    const content = require(`../tmp/bundle.${language.extension}`).render({ buildDate });
     await createHtml(template, content, language);
   }
 
