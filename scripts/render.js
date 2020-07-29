@@ -11,7 +11,7 @@ const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");
 
 const SRC_ROOT = path.join(__dirname, "../src/");
-const OUTPUT_ROOT = path.join(__dirname, "../docs");
+const OUTPUT_ROOT = path.join(__dirname, "../output");
 const STATIC_ROOT = path.join(__dirname, "../static");
 const TMP_OUTPUT_ROOT = path.join(__dirname, "../tmp");
 

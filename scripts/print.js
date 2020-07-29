@@ -8,10 +8,10 @@ const languages = require("../languages");
 
   for (const { htmlOutputFile, printOutputFile } of languages) {
     await page.goto(
-      `file://${path.resolve(__dirname, `../docs/${htmlOutputFile}`)}`
+      `file://${path.resolve(__dirname, `../output/${htmlOutputFile}`)}`
     );
     await page.pdf({
-      path: path.resolve(__dirname, `../docs/${printOutputFile}`),
+      path: path.resolve(__dirname, `../output/${printOutputFile}`),
       printBackground: true,
       format: "a4",
       preferCSSPageSize: true,
