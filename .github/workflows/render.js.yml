@@ -7,18 +7,23 @@ on:
   pull_request
 
 jobs:
-  build:
-
+  render-docs:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+    
+    - name: Setup Node.JS
     - uses: actions/setup-node@v2-beta
       with:
         node-version: '12.16.1'
     - run: npm install
+    
+    - name: Render docs
     - run: npm run render
     
+    - name: Commit changes
     - uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: Update rendered assets
