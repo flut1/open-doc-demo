@@ -10,13 +10,19 @@ jobs:
     steps:
       - name: ⬇️ Checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ github.head_ref }}
 
-      - name: 📝 Render docs
+      - name: 🦄 Setup node
         uses: actions/setup-node@v2-beta
         with:
           node-version: '12.16.1'
-      - run: npm install
-      - run: npm run render
+
+      - name: ⚙️ Install dependencies
+        run: npm install
+
+      - name: 📝 Render docs
+        run: npm run render
 
       - name: 🚀 Deploy to GH Pages
         uses: JamesIves/github-pages-deploy-action@3.5.9
