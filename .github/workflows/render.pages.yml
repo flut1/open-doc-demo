@@ -1,0 +1,28 @@
+name: Update GH Pages
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  render-docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⬇️ Checkout
+      - uses: actions/checkout@v2
+
+      - name: 📝 Render docs
+        uses: actions/setup-node@v2-beta
+        with:
+          node-version: '12.16.1'
+      - run: npm install
+      - run: npm run render
+
+      - name: 🚀 Deploy to GH Pages
+        uses: JamesIves/github-pages-deploy-action@3.5.9
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          CLEAN: true
+          FOLDER: output
+  
