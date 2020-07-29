@@ -2,13 +2,13 @@ module.exports = [
     {
         extension: 'nl',
         dateFormatting: 'nl',
-        htmlOutputFile: 'document.nl.html',
-        printOutputFile: 'document.nl.pdf'
+        htmlOutputFile: 'document (online nederlands).html',
+        printOutputFile: 'document (offline nederlands).pdf'
     },
     {
         extension: 'en',
         dateFormatting: 'en-US',
-        htmlOutputFile: 'document.en.html',
-        printOutputFile: 'document.en.pdf'
+        htmlOutputFile: 'document (online english).html',
+        printOutputFile: 'document (offline english).pdf'
     },
 ];
