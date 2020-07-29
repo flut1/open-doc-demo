@@ -2,7 +2,15 @@
 <html>
 <head>
     <title>MDX Static</title>
-    <link href="./styles.css" rel="stylesheet" type="text/css" />
+
+    {{^artifact}}
+        <link href="./styles.css" rel="stylesheet" type="text/css" />
+    {{/artifact}}
+    {{#artifact}}
+    <style type="text/css">
+        {{{styles}}}
+    </style>
+    {{/artifact}}
 </head>
 <body>
 
