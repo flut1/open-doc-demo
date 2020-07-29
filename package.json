@@ -6,6 +6,7 @@
   "scripts": {
     "prettify": "prettier --write \"(src|scripts)/**.(js|mdx)\"",
     "render": "npm run render:html && npm run render:pdf",
+    "render-artifacts": "node ./scripts/render.js --artifacts && npm run render:pdf",
     "render:html": "node ./scripts/render.js",
     "render:pdf": "node ./scripts/print.js"
   },
@@ -23,6 +24,7 @@
     "date-fns": "^2.15.0",
     "fs-extra": "^9.0.1",
     "git-last-commit": "^1.0.0",
+    "has-flag": "^4.0.0",
     "js-beautify": "^1.11.0",
     "mustache": "^4.0.1",
     "puppeteer": "^5.2.1",

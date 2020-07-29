@@ -6,9 +6,10 @@ const rollup = require("rollup");
 const loadConfigFile = require("rollup/dist/loadConfigFile");
 const { html: beautifyHtml } = require("js-beautify");
 const React = require("react");
-const languages = require("../languages");
+const hasFlag = require('has-flag');
 const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");
+const languages = require("../languages");
 
 const SRC_ROOT = path.join(__dirname, "../src/");
 const OUTPUT_ROOT = path.join(__dirname, "../output");
@@ -33,8 +34,12 @@ const bundleMdxRender = async () => {
 
 const clearBundles = () => fs.remove(TMP_OUTPUT_ROOT);
 
-const createHtml = async (template, content, { htmlOutputFile }) => {
-  const html = Mustache.render(template, { content });
+const createHtml = async (template, content, styles, { htmlOutputFile }) => {
+  const html = Mustache.render(template, {
+    content,
+    artifact: hasFlag('artifacts'),
+    styles
+  });
   await fs.writeFile(
     path.join(OUTPUT_ROOT, htmlOutputFile),
     beautifyHtml(html),
@@ -48,8 +53,12 @@ const createHtml = async (template, content, { htmlOutputFile }) => {
   await bundleMdxRender();
 
   const template = await fs.readFile(
-    path.join(SRC_ROOT, "template.html.mustache"),
-    { encoding: "utf8" }
+      path.join(SRC_ROOT, "template.html.mustache"),
+      { encoding: "utf8" }
+  );
+  const styles = await fs.readFile(
+      path.join(STATIC_ROOT, "styles.css"),
+      { encoding: "utf8" }
   );
 
   await fs.emptyDir(OUTPUT_ROOT);
@@ -62,7 +71,7 @@ const createHtml = async (template, content, { htmlOutputFile }) => {
       { locale: require(`date-fns/locale/${language.dateFormatting}`) }
     );
     const content = require(`../tmp/bundle.${language.extension}`).render({ buildDate });
-    await createHtml(template, content, language);
+    await createHtml(template, content, styles, language);
   }
 
   await clearBundles();
