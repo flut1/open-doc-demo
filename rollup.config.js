@@ -8,10 +8,19 @@ export default require('./languages').map(({extension}) => {
     const extensions = ['.mjs', '.js', '.jsx', '.md', '.mdx'].flatMap(ext => ([`.${extension}${ext}`, ext]));
 
     return {
-        input: 'src/index.jsx',
+        input: {
+            main: 'src/index.jsx'
+        },
         output: {
-            file: `tmp/bundle.${extension}.js`,
+            dir: 'tmp',
             format: 'cjs',
+            entryFileNames: `[name].${extension}.js`,
+            chunkFileNames: `[name].${extension}.js`,
+            manualChunks(id) {
+                if (id.includes('node_modules')) {
+                    return `vendor`;
+                }
+            }
         },
         external: externals(),
         plugins: [

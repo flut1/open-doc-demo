@@ -70,7 +70,7 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
       "PPPpp",
       { locale: require(`date-fns/locale/${language.dateFormatting}`) }
     );
-    const content = require(`../tmp/bundle.${language.extension}`).render({ buildDate });
+    const content = require(`../tmp/main.${language.extension}`).render({ buildDate });
     await createHtml(template, content, styles, language);
   }
 
