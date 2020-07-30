@@ -8,7 +8,8 @@
     "render": "npm run render:html && npm run render:pdf",
     "render-artifacts": "node ./scripts/render.js --artifacts && npm run render:pdf",
     "render:html": "node ./scripts/render.js",
-    "render:pdf": "node ./scripts/print.js"
+    "render:pdf": "node ./scripts/print.js",
+    "watch": "node ./scripts/watch.js"
   },
   "dependencies": {
     "@babel/core": "^7.10.5",
