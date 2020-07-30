@@ -15,11 +15,12 @@ const SRC_ROOT = path.join(__dirname, "../src/");
 const OUTPUT_ROOT = path.join(__dirname, "../output");
 const STATIC_ROOT = path.join(__dirname, "../static");
 
-const createHtml = async (template, content, styles, { htmlOutputFile }) => {
+const createHtmlOutput = async (template, content, styles, { htmlOutputFile, htmlPageTitle }) => {
     const html = Mustache.render(template, {
         content,
         artifact: hasFlag('artifacts'),
-        styles
+        styles,
+        pageTitle: htmlPageTitle
     });
     await fs.writeFile(
         path.join(OUTPUT_ROOT, htmlOutputFile),
@@ -29,6 +30,19 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
         }
     );
 };
+
+const createIndexHtml = async (template) => {
+    const html = Mustache.render(template, {
+        languages,
+    });
+    await fs.writeFile(
+        path.join(OUTPUT_ROOT, 'index.html'),
+        beautifyHtml(html),
+        {
+            encoding: "utf8",
+        }
+    );
+}
 
 async function executeMdxBundles({ lastCommit, styles, template }) {
     for (const language of languages) {
@@ -43,22 +57,20 @@ async function executeMdxBundles({ lastCommit, styles, template }) {
             delete require.cache[modulePath];
         }
         const content = require(moduleId).render({ buildDate });
-        await createHtml(template, content, styles, language);
+        await createHtmlOutput(template, content, styles, language);
     }
 }
 
-(async () => {
+async function watch() {
     const lastCommit = await getLastCommit();
-    await fs.emptyDir(OUTPUT_ROOT);
-    await fs.copy(STATIC_ROOT, OUTPUT_ROOT);
-    const template = await fs.readFile(
-        path.join(SRC_ROOT, "template.html.mustache"),
-        { encoding: "utf8" }
+    const [template, styles, indexTemplate] = await Promise.all(
+        [
+            [SRC_ROOT, "template.html.mustache"],
+            [STATIC_ROOT, "styles.css"],
+            [SRC_ROOT, "index.html.mustache"]
+        ].map(segments => fs.readFile(path.resolve(...segments), { encoding: 'utf8' }))
     );
-    const styles = await fs.readFile(
-        path.join(STATIC_ROOT, "styles.css"),
-        { encoding: "utf8" }
-    );
+    await createIndexHtml(indexTemplate);
 
     const { options } = await loadConfigFile(
         path.resolve(__dirname, "../rollup.config.js")
@@ -78,4 +90,12 @@ async function executeMdxBundles({ lastCommit, styles, template }) {
         }
     });
 
-})();
+    return watcher;
+}
+
+if (hasFlag('run')) {
+    console.log('Starting watcher...');
+    void watch();
+}
+
+module.exports = watch;

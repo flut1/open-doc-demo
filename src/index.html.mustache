@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rendered documents</title>
+</head>
+<body>
+
+<ul>
+    {{#languages}}
+        <li>
+            <ul>
+                <li>HTML: <a href="./{{{htmlOutputFile}}}">{{htmlOutputFile}}</a></li>
+                <li>PRINT: <a href="./{{{printOutputFile}}}">{{printOutputFile}}</a></li>
+            </ul>
+        </li>
+    {{/languages}}
+</ul>
+
+</body>
+</html>
