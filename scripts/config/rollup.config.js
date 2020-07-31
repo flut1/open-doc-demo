@@ -1,30 +1,25 @@
 import "core-js/features/array";
 import "core-js/features/object";
-import Mustache from "mustache";
 import babel from "@rollup/plugin-babel";
 import mdx from "rollup-plugin-mdx";
 import resolve from "@rollup/plugin-node-resolve";
-import commonjs from "@rollup/plugin-commonjs";
-import externals from "rollup-plugin-node-externals";
-import nodeEval from "node-eval";
 
+const { MDX_ROOT } = require("../common/constants");
 const languages = require("../../document.config").languages;
 const getMetadata = require("../render/getMetadata");
-const { renderHtml } = require("../render/renderHtml");
+const {
+  staticallyRenderMdxBundle,
+  renderHtmlTemplate,
+} = require("../render/renderStaticHtml");
 
 export default Promise.all(
-  Object.entries(languages).map(async ([key, languageConfig]) => {
+  Object.keys(languages).map(async (languageKey) => {
     const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"].flatMap((ext) => [
-      `.${key}${ext}`,
+      `.${languageKey}${ext}`,
       ext,
     ]);
-    const metadata = await getMetadata(key);
+    const metadata = await getMetadata(languageKey);
     const babelOptions = require("./babel.config");
-
-    const outputFilename = Mustache.render(
-      languageConfig.htmlOutputFile,
-      metadata
-    );
 
     return {
       input: {
@@ -33,33 +28,36 @@ export default Promise.all(
       output: {
         dir: "output",
         format: "cjs",
-        entryFileNames: outputFilename,
+        exports: "default",
+        name: "render",
+        entryFileNames: metadata.htmlOutputFile,
         plugins: [
           {
-            name: "execBundle",
+            name: "staticallyRenderMdxBundle",
             renderChunk(code) {
-              const { render } = nodeEval(code, "bundle://main.js");
-              return render();
+              return staticallyRenderMdxBundle(code, metadata);
             },
           },
           {
             name: "wrapHtml",
             renderChunk(code) {
-              return renderHtml("document.html", key, code);
+              return renderHtmlTemplate("document.html", {
+                ...metadata,
+                content: code,
+              });
             },
           },
         ],
       },
       inlineDynamicImports: true,
-      external: externals(),
       plugins: [
         mdx({
           babelOptions,
         }),
         resolve({
           extensions,
+          jail: MDX_ROOT,
         }),
-        commonjs(),
         babel({
           ...babelOptions,
           babelHelpers: "bundled",

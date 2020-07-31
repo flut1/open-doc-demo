@@ -1,10 +1,11 @@
 const util = require("util");
 const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");
+const Mustache = require("mustache");
 const documentConfig = require("../../document.config");
 
-async function getMetadata(language = null) {
-  if (language && !documentConfig.languages[language]) {
+async function getMetadata(language) {
+  if (!documentConfig.languages[language]) {
     throw new Error(`Language "${language}" not found in document.config.js`);
   }
   const languageConfig = language ? documentConfig.languages[language] : null;
@@ -37,20 +38,23 @@ async function getMetadata(language = null) {
       : {}
   );
 
-  const metadata = {
+  const baseMetadata = {
     config: documentConfig,
     lastCommit,
     revision,
     generatedOn,
+    language,
   };
 
-  if (languageConfig) {
-    return {
-      metadata,
-      ...languageConfig,
-      language,
-    };
-  }
+  const metaMetadata = {
+    ...baseMetadata,
+    ...languageConfig,
+  };
+
+  const metadata = { ...baseMetadata };
+  Object.entries(languageConfig).forEach(([key, value]) => {
+    metadata[key] = Mustache.render(value, metaMetadata);
+  });
 
   return metadata;
 }
