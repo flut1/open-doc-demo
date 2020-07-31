@@ -11,7 +11,7 @@
     "render:html": "node scripts/render.js",
     "render:pdf": "node scripts/print.js",
     "start": "node scripts/dev.js",
-    "watch": "node scripts/watch.js --run"
+    "watch": "node scripts/watch.js"
   },
   "dependencies": {
     "core-js": "^3.6.5",

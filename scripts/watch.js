@@ -4,9 +4,7 @@ const watch = require('./dev/watch');
 console.log("Starting watcher...");
 void watch();
 
-
-
-
+/*
 
 
 
@@ -120,4 +118,4 @@ if (hasFlag("run")) {
   void watch();
 }
 
-module.exports = watch;
+module.exports = watch;*/
