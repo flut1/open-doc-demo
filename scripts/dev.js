@@ -1,18 +1,53 @@
-const path = require('path');
-const express = require('express');
-const watch = require('./watch');
+require("core-js/es");
 
-const OUTPUT_ROOT = path.join(__dirname, "../output");
-const STATIC_ROOT = path.join(__dirname, "../static");
+const express = require("express");
+const { watchMemory } = require("./dev/watch");
+const { STATIC_ROOT } = require("./common/constants");
 
 (async () => {
-    const watcher = await watch();
+  console.log("Starting compiler...");
+  const watcher = await watchMemory();
+  const app = express();
+  const connections = new Set();
+  let messageId = 0;
 
-    console.log('Starting dev server...');
-    const app = express();
-    app.use('/', express.static(OUTPUT_ROOT));
-    app.use('/', express.static(STATIC_ROOT));
+  app.use("/", (req, res, next) => {
+    const filename = decodeURIComponent(req.path.replace(/^\//, ""));
+    if (!watcher.assets[filename]) {
+      next();
+      return;
+    }
+    res.set({ "Content-Type": "text/html" }).send(watcher.assets[filename]);
+  });
 
-    app.listen(3000);
-    console.log('Dev server listening on port 3000');
+  app.use(express.static(STATIC_ROOT));
+
+  app.use("/dev-updates", (req, res) => {
+    res.writeHead(200, {
+      "Content-Type": "text/event-stream",
+      "Cache-Control": "no-cache",
+      Connection: "keep-alive",
+    });
+    res.write("\n");
+
+    const connection = { res, filename: req.query.filename };
+    connections.add(connection);
+
+    console.log(`Connected to: ${req.query.filename}`);
+
+    req.on("close", () => {
+      connections.delete(connection);
+    });
+  });
+
+  watcher.on("done", () => {
+    Array.from(connections).forEach(({ res, filename }) => {
+      res.write(`id: ${messageId}\n`);
+      res.write(`data: Update\n\n`);
+    });
+  });
+
+  console.log("Starting dev server...");
+  app.listen(3000);
+  console.log("Dev server listening on port 3000");
 })();

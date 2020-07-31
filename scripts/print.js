@@ -1,3 +1,5 @@
+require("core-js/es");
+
 const puppeteer = require("puppeteer");
 const path = require("path");
 const languages = require("../languages");
