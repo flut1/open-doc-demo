@@ -2,6 +2,17 @@ module.exports = {
   plugins: ["prettier", "react"],
   rules: {
     "prettier/prettier": "warn",
+    "no-restricted-modules": [
+      "error",
+      {
+        paths: [
+          {
+            name: "fs",
+            message: "use fs-extra instead.",
+          },
+        ],
+      },
+    ],
   },
   extends: [
     "eslint:recommended",
@@ -11,7 +22,7 @@ module.exports = {
   ],
   overrides: [
     {
-      files: ["./rollup.config.js", "*.mdx"],
+      files: ["rollup.config.js", "*.mdx"],
       parserOptions: {
         sourceType: "module",
       },

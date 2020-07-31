@@ -1,4 +1,14 @@
 require("core-js/es");
+const watch = require('./dev/watch');
+
+console.log("Starting watcher...");
+void watch();
+
+
+
+
+
+
 
 const path = require("path");
 const fs = require("fs-extra");

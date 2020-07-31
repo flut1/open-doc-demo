@@ -14,7 +14,8 @@
     "watch": "node scripts/watch.js --run"
   },
   "dependencies": {
-    "core-js": "^3.6.5"
+    "core-js": "^3.6.5",
+    "node-eval": "^2.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
@@ -27,6 +28,7 @@
     "@rollup/plugin-babel": "^5.1.0",
     "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
+    "@rollup/pluginutils": "^3.1.0",
     "babel-eslint": "^10.1.0",
     "date-fns": "^2.15.0",
     "eslint": "^7.5.0",

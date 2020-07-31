@@ -1,5 +1,9 @@
 require("core-js/es");
+const renderToDisk = require("./render/renderToDisk");
 
+void renderToDisk();
+
+/*
 const path = require("path");
 const fs = require("fs-extra");
 const util = require("util");
@@ -77,4 +81,4 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
   }
 
   // await clearBundles();
-})();
+})();*/
