@@ -1,12 +1,12 @@
 const path = require("path");
 const fs = require("fs-extra");
-const util = require('util');
+const util = require("util");
 const Mustache = require("mustache");
 const rollup = require("rollup");
 const loadConfigFile = require("rollup/dist/loadConfigFile");
 const { html: beautifyHtml } = require("js-beautify");
 const React = require("react");
-const hasFlag = require('has-flag');
+const hasFlag = require("has-flag");
 const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");
 const languages = require("../languages");
@@ -25,7 +25,7 @@ const bundleMdxRender = async () => {
   }
   warnings.flush();
   return Promise.all(
-    options.map(async (opt) => {
+    options.map(async opt => {
       const bundle = await rollup.rollup(opt);
       await Promise.all(opt.output.map(bundle.write));
     })
@@ -37,14 +37,14 @@ const clearBundles = () => fs.remove(TMP_OUTPUT_ROOT);
 const createHtml = async (template, content, styles, { htmlOutputFile }) => {
   const html = Mustache.render(template, {
     content,
-    artifact: hasFlag('artifacts'),
+    artifact: hasFlag("artifacts"),
     styles
   });
   await fs.writeFile(
     path.join(OUTPUT_ROOT, htmlOutputFile),
     beautifyHtml(html),
     {
-      encoding: "utf8",
+      encoding: "utf8"
     }
   );
 };
@@ -53,13 +53,12 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
   await bundleMdxRender();
 
   const template = await fs.readFile(
-      path.join(SRC_ROOT, "template.html.mustache"),
-      { encoding: "utf8" }
+    path.join(SRC_ROOT, "template.html.mustache"),
+    { encoding: "utf8" }
   );
-  const styles = await fs.readFile(
-      path.join(STATIC_ROOT, "styles.css"),
-      { encoding: "utf8" }
-  );
+  const styles = await fs.readFile(path.join(STATIC_ROOT, "styles.css"), {
+    encoding: "utf8"
+  });
 
   await fs.emptyDir(OUTPUT_ROOT);
   await fs.copy(STATIC_ROOT, OUTPUT_ROOT);
@@ -70,10 +69,11 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
       "PPPpp",
       { locale: require(`date-fns/locale/${language.dateFormatting}`) }
     );
-    const content = require(`../tmp/main.${language.extension}`).render({ buildDate });
+    const content = require(`../tmp/main.${language.extension}`).render({
+      buildDate
+    });
     await createHtml(template, content, styles, language);
   }
-
 
   // await clearBundles();
 })();

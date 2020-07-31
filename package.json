@@ -29,7 +29,6 @@
     "has-flag": "^4.0.0",
     "js-beautify": "^1.11.0",
     "mustache": "^4.0.1",
-    "puppeteer": "^5.2.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "rollup": "^2.23.0",
@@ -41,6 +40,6 @@
     "rollup-plugin-node-externals": "^2.2.0"
   },
   "engines": {
-    "node": ">=12.4.0"
+    "node": ">=10.21.0"
   }
 }
