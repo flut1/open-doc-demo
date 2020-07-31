@@ -1,3 +1,5 @@
+require("core-js/es");
+
 const path = require("path");
 const express = require("express");
 const watch = require("./watch");

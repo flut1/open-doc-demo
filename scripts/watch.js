@@ -1,3 +1,5 @@
+require("core-js/es");
+
 const path = require("path");
 const fs = require("fs-extra");
 const util = require("util");

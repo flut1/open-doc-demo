@@ -1,3 +1,5 @@
+require("core-js/es");
+
 const path = require("path");
 const fs = require("fs-extra");
 const util = require("util");
@@ -5,7 +7,6 @@ const Mustache = require("mustache");
 const rollup = require("rollup");
 const loadConfigFile = require("rollup/dist/loadConfigFile");
 const { html: beautifyHtml } = require("js-beautify");
-const React = require("react");
 const hasFlag = require("has-flag");
 const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");

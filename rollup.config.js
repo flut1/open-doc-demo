@@ -1,3 +1,4 @@
+import "core-js/features/array";
 import mdx from "rollup-plugin-mdx";
 import resolve from "@rollup/plugin-node-resolve";
 import babel from "@rollup/plugin-babel";
@@ -5,10 +6,10 @@ import commonjs from "@rollup/plugin-commonjs";
 import externals from "rollup-plugin-node-externals";
 
 export default require("./languages").map(({ extension }) => {
-  const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"]
-    /* alternative to flatMap (not supported in this NodeJS version */
-    .map((ext) => [`.${extension}${ext}`, ext])
-    .reduce((res, current) => res.concat(current));
+  const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"].flatMap((ext) => [
+    `.${extension}${ext}`,
+    ext,
+  ]);
 
   return {
     input: {
