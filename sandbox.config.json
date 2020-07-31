@@ -1,6 +1,6 @@
 {
     "infiniteLoopProtection": true,
-    "hardReloadOnChange": true,
+    "hardReloadOnChange": false,
     "view": "browser",
     "port": 3000
 }
