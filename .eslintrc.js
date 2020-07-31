@@ -37,6 +37,11 @@ module.exports = {
       },
     },
   ],
+  settings: {
+    react: {
+      version: "16.13.1",
+    },
+  },
   env: {
     node: true,
     es2017: true,

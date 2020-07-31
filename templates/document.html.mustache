@@ -1,20 +1,27 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{pageTitle}}</title>
+    <title>{{htmlPageTitle}}</title>
 
-    {{^artifact}}
-        <link href="./styles.css" rel="stylesheet" type="text/css" />
-    {{/artifact}}
-    {{#artifact}}
-    <style type="text/css">
-        {{{styles}}}
-    </style>
-    {{/artifact}}
+    <link href="./styles.css" rel="stylesheet" type="text/css" />
 </head>
 <body>
 
 {{{content}}}
+
+{{#devServer}}
+<script type="text/javascript">
+  const sseSource = new EventSource(
+    '/dev-updates?filename=' +
+    encodeURIComponent(location.pathname.replace(/^\//, ''))
+  );
+
+  sseSource.addEventListener('message', () => {
+    sseSource.close();
+    location.reload();
+  });
+</script>
+{{/devServer}}
 
 </body>
 </html>

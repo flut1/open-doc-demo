@@ -12,6 +12,19 @@ const {
   renderHtmlTemplate,
 } = require("../render/renderStaticHtml");
 
+const renderChunkWithMetadata = (pluginFn, initialMetadata) => {
+  let metadata = initialMetadata;
+
+  return {
+    renderChunk(code) {
+      return pluginFn(code, metadata);
+    },
+    setMetadata(newData) {
+      metadata = { ...metadata, ...newData };
+    },
+  };
+};
+
 export default Promise.all(
   Object.keys(languages).map(async (languageKey) => {
     const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"].flatMap((ext) => [
@@ -34,18 +47,21 @@ export default Promise.all(
         plugins: [
           {
             name: "staticallyRenderMdxBundle",
+            ...renderChunkWithMetadata((code, m) => {
+              return staticallyRenderMdxBundle(code, m);
+            }, metadata),
             renderChunk(code) {
               return staticallyRenderMdxBundle(code, metadata);
             },
           },
           {
             name: "wrapHtml",
-            renderChunk(code) {
+            ...renderChunkWithMetadata((code, m) => {
               return renderHtmlTemplate("document.html", {
-                ...metadata,
+                ...m,
                 content: code,
               });
-            },
+            }, metadata),
           },
         ],
       },

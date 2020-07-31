@@ -4,8 +4,8 @@
   "repository": "git@github.com:flut1/open-doc-demo.git",
   "main": "index.js",
   "scripts": {
-    "lint": "eslint . --ext js,mdx",
     "fix": "eslint . --ext js,mdx --fix",
+    "lint": "eslint . --ext js,mdx",
     "render": "npm run render:html && npm run render:pdf",
     "render-artifacts": "node scripts/render.js --artifacts && npm run render:pdf",
     "render:html": "node scripts/render.js",
@@ -14,8 +14,12 @@
     "watch": "node scripts/watch.js"
   },
   "dependencies": {
+    "@mdx-js/react": "^1.6.14",
     "core-js": "^3.6.5",
-    "node-eval": "^2.0.0"
+    "node-eval": "^2.0.0",
+    "react": "16.13.1",
+    "react-dom": "16.13.1",
+    "rollup-plugin-mdx": "^0.1.0"
   },
   "devDependencies": {
     "@babel/core": "^7.10.5",
@@ -24,12 +28,11 @@
     "@babel/preset-env": "^7.10.4",
     "@babel/preset-react": "^7.10.4",
     "@mdx-js/mdx": "^1.6.14",
-    "@mdx-js/react": "^1.6.14",
     "@rollup/plugin-babel": "^5.1.0",
-    "@rollup/plugin-commonjs": "^14.0.0",
     "@rollup/plugin-node-resolve": "^8.4.0",
     "@rollup/pluginutils": "^3.1.0",
     "babel-eslint": "^10.1.0",
+    "chokidar": "^3.4.1",
     "date-fns": "^2.15.0",
     "eslint": "^7.5.0",
     "eslint-config-prettier": "^6.11.0",
@@ -38,16 +41,11 @@
     "express": "^4.17.1",
     "fs-extra": "^9.0.1",
     "git-last-commit": "^1.0.0",
-    "has-flag": "^4.0.0",
     "js-beautify": "^1.11.0",
     "mustache": "^4.0.1",
     "prettier": "^2.0.5",
     "puppeteer-core": "^5.2.1",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "rollup": "^2.23.0",
-    "rollup-plugin-mdx": "^0.1.0",
-    "rollup-plugin-node-externals": "^2.2.0"
+    "rollup": "^2.23.0"
   },
   "engines": {
     "node": ">=10.21.0"
