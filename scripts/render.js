@@ -25,7 +25,7 @@ const bundleMdxRender = async () => {
   }
   warnings.flush();
   return Promise.all(
-    options.map(async opt => {
+    options.map(async (opt) => {
       const bundle = await rollup.rollup(opt);
       await Promise.all(opt.output.map(bundle.write));
     })
@@ -38,13 +38,13 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
   const html = Mustache.render(template, {
     content,
     artifact: hasFlag("artifacts"),
-    styles
+    styles,
   });
   await fs.writeFile(
     path.join(OUTPUT_ROOT, htmlOutputFile),
     beautifyHtml(html),
     {
-      encoding: "utf8"
+      encoding: "utf8",
     }
   );
 };
@@ -57,7 +57,7 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
     { encoding: "utf8" }
   );
   const styles = await fs.readFile(path.join(STATIC_ROOT, "styles.css"), {
-    encoding: "utf8"
+    encoding: "utf8",
   });
 
   await fs.emptyDir(OUTPUT_ROOT);
@@ -70,7 +70,7 @@ const createHtml = async (template, content, styles, { htmlOutputFile }) => {
       { locale: require(`date-fns/locale/${language.dateFormatting}`) }
     );
     const content = require(`../tmp/main.${language.extension}`).render({
-      buildDate
+      buildDate,
     });
     await createHtml(template, content, styles, language);
   }

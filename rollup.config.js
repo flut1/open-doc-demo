@@ -6,12 +6,12 @@ import externals from "rollup-plugin-node-externals";
 
 export default require("./languages").map(({ extension }) => {
   const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"]
-    .map(ext => [`.${extension}${ext}`, ext])
+    .map((ext) => [`.${extension}${ext}`, ext])
     .reduce((res, current) => res.concat(current));
 
   return {
     input: {
-      main: "src/index.jsx"
+      main: "src/index.jsx",
     },
     output: {
       dir: "tmp",
@@ -22,24 +22,24 @@ export default require("./languages").map(({ extension }) => {
         if (id.includes("node_modules")) {
           return `vendor`;
         }
-      }
+      },
     },
     external: externals(),
     plugins: [
       mdx({
         babelOptions: {
           /* custom options */
-        }
+        },
       }),
       resolve({
-        extensions
+        extensions,
       }),
       commonjs(),
       babel({
         babelHelpers: "bundled",
         exclude: "node_modules/**",
-        extensions
-      })
-    ]
+        extensions,
+      }),
+    ],
   };
 });

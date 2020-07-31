@@ -4,7 +4,7 @@
   "repository": "git@github.com:flut1/open-doc-demo.git",
   "main": "index.js",
   "scripts": {
-    "prettify": "prettier --write \"(src|scripts)/**.(js|mdx)\"",
+    "prettify": "prettier --write \"**/*.(js|mdx)\"",
     "render": "npm run render:html && npm run render:pdf",
     "render-artifacts": "node ./scripts/render.js --artifacts && npm run render:pdf",
     "render:html": "node ./scripts/render.js",

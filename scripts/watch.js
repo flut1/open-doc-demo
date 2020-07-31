@@ -24,23 +24,23 @@ const createHtmlOutput = async (
     content,
     artifact: hasFlag("artifacts"),
     styles,
-    pageTitle: htmlPageTitle
+    pageTitle: htmlPageTitle,
   });
   await fs.writeFile(
     path.join(OUTPUT_ROOT, htmlOutputFile),
     beautifyHtml(html),
     {
-      encoding: "utf8"
+      encoding: "utf8",
     }
   );
 };
 
-const createIndexHtml = async template => {
+const createIndexHtml = async (template) => {
   const html = Mustache.render(template, {
-    languages
+    languages,
   });
   await fs.writeFile(path.join(OUTPUT_ROOT, "index.html"), beautifyHtml(html), {
-    encoding: "utf8"
+    encoding: "utf8",
   });
 };
 
@@ -74,8 +74,8 @@ async function watch() {
     [
       [SRC_ROOT, "template.html.mustache"],
       [STATIC_ROOT, "styles.css"],
-      [SRC_ROOT, "index.html.mustache"]
-    ].map(segments =>
+      [SRC_ROOT, "index.html.mustache"],
+    ].map((segments) =>
       fs.readFile(path.resolve(...segments), { encoding: "utf8" })
     )
   );
@@ -88,7 +88,7 @@ async function watch() {
   const watcher = rollup.watch(options);
   let bundling = Promise.resolve();
 
-  watcher.on("event", event => {
+  watcher.on("event", (event) => {
     if (event.code === "END") {
       bundling.then(() => {
         bundling = executeMdxBundles({ lastCommit, styles, template });
