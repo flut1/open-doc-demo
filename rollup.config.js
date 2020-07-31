@@ -6,6 +6,7 @@ import externals from "rollup-plugin-node-externals";
 
 export default require("./languages").map(({ extension }) => {
   const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"]
+    /* alternative to flatMap (not supported in this NodeJS version */
     .map((ext) => [`.${extension}${ext}`, ext])
     .reduce((res, current) => res.concat(current));
 
