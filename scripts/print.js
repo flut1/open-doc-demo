@@ -7,7 +7,7 @@ const { languages } = require("../document.config");
 const getMetadata = require("./common/getMetadata");
 
 (async () => {
-  console.log('Launching headless browser...');
+  console.log("Launching headless browser...");
   const browser = await puppeteer.launch({
     product: "chrome",
   });

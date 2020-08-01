@@ -30,6 +30,7 @@ class MemoryWatcher extends EventEmitter {
     super();
 
     this.assets = {};
+    this.watchingPaths = [];
   }
 
   async initialize() {
@@ -50,9 +51,11 @@ class MemoryWatcher extends EventEmitter {
 
   async render() {
     const { options } = this.rollupConfig;
+
+    const newWatchPaths = new Set();
     for (const optionSet of options) {
       const bundle = await rollup.rollup(optionSet);
-      this.watcher.add(bundle.watchFiles);
+      bundle.watchFiles.forEach(f => newWatchPaths.add(f));
 
       const outputOptions = { ...optionSet.output[0] };
       outputOptions.plugins.forEach((plugin) => {
@@ -65,9 +68,23 @@ class MemoryWatcher extends EventEmitter {
       for (const { fileName, code } of output) {
         this.assets[fileName] = code;
       }
-
-      this.emit("done");
     }
+
+    this.setWatchFiles(Array.from(newWatchPaths));
+    this.emit("done");
+  }
+
+  setWatchFiles(newFiles) {
+    const toRemove = this.watchingPaths.filter(p => !newFiles.includes(p));
+    const toAdd = newFiles.filter(p => !this.watchingPaths.includes(p));
+
+    if (toRemove.length || toAdd.length) {
+      console.log(`Watching ${toAdd.length} new source files${toRemove.length ? ` and unwatching ${toRemove.length}` : ''}`);
+    }
+    this.watcher.unwatch(toRemove);
+    this.watcher.add(toAdd);
+
+    this.watchingPaths = newFiles;
   }
 }
 
