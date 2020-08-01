@@ -3,8 +3,8 @@ require("core-js/es");
 const puppeteer = require("puppeteer-core");
 const path = require("path");
 const { OUTPUT_ROOT } = require("./common/constants");
-const { languages } = require("../document.config");
 const getMetadata = require("./common/getMetadata");
+const { getConfig } = require("./common/getConfig");
 
 (async () => {
   console.log("Launching headless browser...");
@@ -12,6 +12,7 @@ const getMetadata = require("./common/getMetadata");
     product: "chrome",
   });
   const page = await browser.newPage();
+  const { languages } = getConfig();
 
   for (const languageKey of Object.keys(languages)) {
     console.log(`Opening output for language "${languageKey}"`);

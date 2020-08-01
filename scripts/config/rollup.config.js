@@ -5,7 +5,7 @@ import mdx from "rollup-plugin-mdx";
 import resolve from "@rollup/plugin-node-resolve";
 
 const { MDX_ROOT } = require("../common/constants");
-const languages = require("../../document.config").languages;
+const { getConfig } = require("../common/getConfig");
 const getMetadata = require("../common/getMetadata");
 const {
   staticallyRenderMdxBundle,
@@ -25,62 +25,69 @@ const renderChunkWithMetadata = (pluginFn, initialMetadata) => {
   };
 };
 
-export default Promise.all(
-  Object.keys(languages).map(async (languageKey) => {
-    const extensions = [".mjs", ".js", ".jsx", ".md", ".mdx"].flatMap((ext) => [
-      `.${languageKey}${ext}`,
-      ext,
-    ]);
-    const metadata = await getMetadata(languageKey);
-    const babelOptions = require("./babel.config");
+export default () => {
+  const { languages } = getConfig();
 
-    return {
-      input: {
-        main: "document/index.jsx",
-      },
-      output: {
-        dir: "output",
-        format: "cjs",
-        exports: "default",
-        name: "render",
-        entryFileNames: metadata.webOutputFile,
-        plugins: [
-          {
-            name: "staticallyRenderMdxBundle",
-            ...renderChunkWithMetadata((code, m) => {
-              return staticallyRenderMdxBundle(code, m);
-            }, metadata),
-            renderChunk(code) {
-              return staticallyRenderMdxBundle(code, metadata);
+  return Promise.all(
+    Object.keys(languages).map(async (languageKey) => {
+      const extensions = [
+        ".mjs",
+        ".js",
+        ".jsx",
+        ".md",
+        ".mdx",
+      ].flatMap((ext) => [`.${languageKey}${ext}`, ext]);
+      const metadata = await getMetadata(languageKey);
+      const babelOptions = require("./babel.config");
+
+      return {
+        input: {
+          main: "document/index.jsx",
+        },
+        output: {
+          dir: "output",
+          format: "cjs",
+          exports: "default",
+          name: "render",
+          entryFileNames: metadata.webOutputFile,
+          plugins: [
+            {
+              name: "staticallyRenderMdxBundle",
+              ...renderChunkWithMetadata((code, m) => {
+                return staticallyRenderMdxBundle(code, m);
+              }, metadata),
+              renderChunk(code) {
+                return staticallyRenderMdxBundle(code, metadata);
+              },
             },
-          },
-          {
-            name: "wrapHtml",
-            ...renderChunkWithMetadata((code, m) => {
-              return renderHtmlTemplate("document.html", {
-                ...m,
-                content: code,
-              });
-            }, metadata),
-          },
+            {
+              name: "wrapHtml",
+              ...renderChunkWithMetadata((code, m) => {
+                return renderHtmlTemplate("document.html", {
+                  ...m,
+                  content: code,
+                });
+              }, metadata),
+            },
+          ],
+        },
+        inlineDynamicImports: true,
+        plugins: [
+          mdx({
+            babelOptions,
+          }),
+          resolve({
+            extensions,
+            jail: MDX_ROOT,
+          }),
+          babel({
+            ...babelOptions,
+            babelHelpers: "bundled",
+            exclude: "node_modules/**",
+            extensions: [".js", ".jsx"],
+          }),
         ],
-      },
-      inlineDynamicImports: true,
-      plugins: [
-        mdx({
-          babelOptions,
-        }),
-        resolve({
-          extensions,
-          jail: MDX_ROOT,
-        }),
-        babel({
-          ...babelOptions,
-          babelHelpers: "bundled",
-          exclude: "node_modules/**",
-          extensions: [".js", ".jsx"],
-        }),
-      ],
-    };
-  })
-);
+      };
+    })
+  );
+};

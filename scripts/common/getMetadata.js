@@ -2,9 +2,10 @@ const util = require("util");
 const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");
 const Mustache = require("mustache");
-const documentConfig = require("../../document.config");
+const { getConfig } = require("./getConfig");
 
 async function getMetadata(language) {
+  const documentConfig = getConfig();
   if (!documentConfig.languages[language]) {
     throw new Error(`Language "${language}" not found in document.config.js`);
   }

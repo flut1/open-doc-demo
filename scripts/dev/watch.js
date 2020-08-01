@@ -3,6 +3,7 @@ const EventEmitter = require("events");
 const rollup = require("rollup");
 const loadRollupConfig = require("rollup/dist/loadConfigFile");
 const chokidar = require("chokidar");
+const { invalidateConfig } = require("../common/getConfig");
 const { TEMPLATE_ROOT } = require("../common/constants");
 
 async function watch() {
@@ -33,28 +34,43 @@ class MemoryWatcher extends EventEmitter {
     this.watchingPaths = [];
   }
 
-  async initialize() {
-    this.rollupConfig = await loadRollupConfig(
-      path.resolve(__dirname, "../config/rollup.config.js")
-    );
+  initialize() {
+    this.busy = this.doInitialize();
+  }
+
+  async doInitialize() {
     const watchOptions = {
       persistent: true,
       usePolling: !!process.env.CODESANDBOX_SSE,
     };
     this.watcher = chokidar.watch(
-      [path.join(TEMPLATE_ROOT, "document.html.mustache")],
+      [
+        path.join(TEMPLATE_ROOT, "document.html.mustache"),
+        path.join(__dirname, "../../document.config.js"),
+      ],
       watchOptions
     );
-    console.log(`Created file watcher with options ${JSON.stringify(watchOptions)}`);
+    console.log(
+      `Created file watcher with options ${JSON.stringify(watchOptions)}`
+    );
 
     this.watcher.on("change", () => {
+      console.log('CHANGE');
+      invalidateConfig();
       this.render();
     });
 
-    this.render();
+    return this.doRender();
   }
 
-  async render() {
+  render() {
+    this.busy = this.doRender();
+  }
+
+  async doRender() {
+    this.rollupConfig = await loadRollupConfig(
+      path.resolve(__dirname, "../config/rollup.config.js")
+    );
     const { options } = this.rollupConfig;
 
     const newWatchPaths = new Set();
@@ -78,6 +94,7 @@ class MemoryWatcher extends EventEmitter {
 
     this.setWatchFiles(Array.from(newWatchPaths));
     this.updateAssets(newAssets);
+    return newAssets;
   }
 
   updateAssets(newAssets) {
@@ -146,10 +163,4 @@ class MemoryWatcher extends EventEmitter {
   }
 }
 
-async function watchMemory() {
-  const watcher = new MemoryWatcher();
-  await watcher.initialize();
-  return watcher;
-}
-
-module.exports = { watch, watchMemory };
+module.exports = { watch, MemoryWatcher };

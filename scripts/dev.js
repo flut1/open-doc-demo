@@ -1,22 +1,31 @@
 require("core-js/es");
 
 const express = require("express");
-const { watchMemory } = require("./dev/watch");
+const { MemoryWatcher } = require("./dev/watch");
 const { STATIC_ROOT } = require("./common/constants");
 
 (async () => {
   console.log("Starting compiler...");
-  const watcher = await watchMemory();
+  const watcher = new MemoryWatcher();
+  watcher.initialize();
   const app = express();
   const connections = new Set();
 
   app.use("/", (req, res, next) => {
-    const filename = decodeURIComponent(req.path.replace(/^\//, ""));
-    if (!watcher.assets[filename]) {
-      next();
-      return;
-    }
-    res.set({ "Content-Type": "text/html" }).send(watcher.assets[filename]);
+    const logBusy = setTimeout(
+      () => console.log(`Request "${req.path}" waiting for bundler...`),
+      500
+    );
+    watcher.busy.then(() => clearTimeout(logBusy));
+
+    watcher.busy.then(() => {
+      const filename = decodeURIComponent(req.path.replace(/^\//, ""));
+      if (!watcher.assets[filename]) {
+        next();
+        return;
+      }
+      res.set({ "Content-Type": "text/html" }).send(watcher.assets[filename]);
+    });
   });
 
   app.use(express.static(STATIC_ROOT));
@@ -25,7 +34,6 @@ const { STATIC_ROOT } = require("./common/constants");
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
-      Connection: "keep-alive",
     });
     res.write("event: pong\n");
     res.write(`data: ${JSON.stringify({ ping: "pong" })}\n\n`);
@@ -39,6 +47,10 @@ const { STATIC_ROOT } = require("./common/constants");
       connections.delete(connection);
     });
   });
+
+  if (!process.env.CODESANDBOX_SSE) {
+    await require("open")("http://localhost:3000/Het Verslag.nederlands.html");
+  }
 
   watcher.on("change", (changes) => {
     console.log(
