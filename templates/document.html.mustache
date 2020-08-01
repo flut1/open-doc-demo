@@ -30,6 +30,10 @@
         }
       }
 
+      .dev-status.connecting {
+        background-color: darkorange;
+      }
+
       .dev-status.connected {
         background-color: green;
       }
@@ -66,47 +70,62 @@
 <script type="text/javascript">
   const statusElement = document.querySelector('.dev-status');
   const wrapperElement = document.querySelector('.wrapper');
-  const sseSource = new EventSource(
-    '/dev-updates?filename=' +
-    location.pathname.replace(/^\//, '')
-  );
+  let currentStatus = 'connecting';
+  let sseSource;
 
-  const statusClasses = ['connected', 'error', 'updating', 'refreshing'];
+  const statusNames = ['connecting', 'connected', 'error', 'updating', 'refreshing'];
   function setStatus(status) {
-    statusClasses.filter(s => s !== status).forEach(s => statusElement.classList.remove(s));
-    statusElement.classList.add(status)
+    if (currentStatus !== status) {
+      statusElement.classList.remove(currentStatus);
+      statusElement.classList.add(status);
+      currentStatus = status;
+    }
   }
 
-  statusElement.addEventListener('animationend', () => {
-    setStatus('connected');
-  });
+  function initialize() {
+    setStatus('connecting');
+    sseSource = new EventSource(
+            '/dev-updates?filename=' +
+            location.pathname.replace(/^\//, '')
+    );
 
-  sseSource.addEventListener('open', () => {
-    setStatus('connected');
-  });
+    statusElement.addEventListener('animationend', () => {
+      setStatus('connected');
+    });
 
-  sseSource.addEventListener('reload', () => {
-    console.log('dev-updates reload event');
-    setStatus('refreshing');
-    sseSource.close();
-    location.reload();
-  });
+    sseSource.addEventListener('open', () => {
+      setStatus('connected');
+    });
 
-  sseSource.addEventListener('content', (message) => {
-    console.log('dev-updates content event');
-    setStatus('updating');
-    try {
-      const data = JSON.parse(message.data);
+    sseSource.addEventListener('reload', () => {
+      console.log('dev-updates reload event');
+      setStatus('refreshing');
+      sseSource.close();
+      location.reload();
+    });
 
-      wrapperElement.innerHTML = data.content;
-    } catch (e) {
-      console.log('Unable to parse incoming message data');
-    }
-  });
+    sseSource.addEventListener('content', (message) => {
+      console.log('dev-updates content event');
+      setStatus('updating');
+      try {
+        const data = JSON.parse(message.data);
 
-  sseSource.addEventListener('error', () => {
-    setStatus('error');
-  });
+        wrapperElement.innerHTML = data.content;
+      } catch (e) {
+        console.log('Unable to parse incoming message data');
+      }
+    });
+
+    sseSource.addEventListener('error', () => {
+      setStatus('error');
+      sseSource.close();
+      sseSource = null;
+      setTimeout(initialize, 3000);
+    });
+  }
+
+  initialize();
+
 </script>
 {{/devServer}}
 
