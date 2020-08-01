@@ -16,6 +16,18 @@
         right: 1vw;
         background-color: darkorange;
         transition: background-color 0.3s;
+        transform-origin: 50% 50%;
+      }
+
+      @keyframes update-flash {
+        from {
+          transform: scale(1.4);
+          background-color: darkmagenta;
+        }
+        to {
+          transform: scale(1);
+          background-color: green;
+        }
       }
 
       .dev-status.connected {
@@ -26,6 +38,10 @@
         background-color: cornflowerblue;
       }
 
+      .dev-status.updating {
+        animation: 0.7s ease-out 0s 1 both update-flash;
+      }
+
       .dev-status.error {
         background-color: darkred;
       }
@@ -34,36 +50,62 @@
 </head>
 <body>
 
+{{#devServer}}
+<div class="wrapper">
+<!-- CONTENT -->
+{{/devServer}}
+
 {{{content}}}
 
 {{#devServer}}
+<!-- /CONTENT -->
+</div>
+
 <div class="dev-status"></div>
 
 <script type="text/javascript">
   const statusElement = document.querySelector('.dev-status');
+  const wrapperElement = document.querySelector('.wrapper');
   const sseSource = new EventSource(
     '/dev-updates?filename=' +
-    encodeURIComponent(location.pathname.replace(/^\//, ''))
+    location.pathname.replace(/^\//, '')
   );
 
-  sseSource.addEventListener('open', () => {
-    statusElement.classList.add('connected');
-    statusElement.classList.remove('error');
-    statusElement.classList.remove('refreshing');
+  const statusClasses = ['connected', 'error', 'updating', 'refreshing'];
+  function setStatus(status) {
+    statusClasses.filter(s => s !== status).forEach(s => statusElement.classList.remove(s));
+    statusElement.classList.add(status)
+  }
+
+  statusElement.addEventListener('animationend', () => {
+    setStatus('connected');
   });
 
-  sseSource.addEventListener('message', () => {
-    statusElement.classList.add('refreshing');
-    statusElement.classList.remove('error');
-    statusElement.classList.remove('connected');
+  sseSource.addEventListener('open', () => {
+    setStatus('connected');
+  });
+
+  sseSource.addEventListener('reload', () => {
+    console.log('dev-updates reload event');
+    setStatus('refreshing');
     sseSource.close();
     location.reload();
   });
 
+  sseSource.addEventListener('content', (message) => {
+    console.log('dev-updates content event');
+    setStatus('updating');
+    try {
+      const data = JSON.parse(message.data);
+
+      wrapperElement.innerHTML = data.content;
+    } catch (e) {
+      console.log('Unable to parse incoming message data');
+    }
+  });
+
   sseSource.addEventListener('error', () => {
-    statusElement.classList.remove('refreshing');
-    statusElement.classList.remove('connected');
-    statusElement.classList.add('error');
+    setStatus('error');
   });
 </script>
 {{/devServer}}

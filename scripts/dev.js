@@ -9,7 +9,6 @@ const { STATIC_ROOT } = require("./common/constants");
   const watcher = await watchMemory();
   const app = express();
   const connections = new Set();
-  let messageId = 0;
 
   app.use("/", (req, res, next) => {
     const filename = decodeURIComponent(req.path.replace(/^\//, ""));
@@ -28,7 +27,7 @@ const { STATIC_ROOT } = require("./common/constants");
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
     });
-    res.write("\n");
+    res.write("event: pong\n\n");
 
     const connection = { res, filename: req.query.filename };
     connections.add(connection);
@@ -40,10 +39,35 @@ const { STATIC_ROOT } = require("./common/constants");
     });
   });
 
-  watcher.on("done", () => {
+  watcher.on("change", (changes) => {
+    console.log(
+      `Asset changes: ${changes
+        .map(
+          (change) =>
+            `${change.filename} (${
+              change.type === "full" ? "full" : "content"
+            })`
+        )
+        .join(", ")}`
+    );
+
     Array.from(connections).forEach(({ res, filename }) => {
-      res.write(`id: ${messageId}\n`);
-      res.write(`data: Update\n\n`);
+      const change = changes.find((change) => change.filename === filename);
+      if (change) {
+        if (change.type === "full") {
+          res.write(`event: reload\n`);
+          res.write(
+            `data: ${JSON.stringify(
+              changes
+                .filter((change) => change.type === "full")
+                .map((change) => change.filename)
+            )}\n\n`
+          );
+        } else {
+          res.write(`event: content\n`);
+          res.write(`data: ${JSON.stringify({ content: change.content })}\n\n`);
+        }
+      }
     });
   });
 
