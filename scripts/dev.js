@@ -27,7 +27,8 @@ const { STATIC_ROOT } = require("./common/constants");
       "Cache-Control": "no-cache",
       Connection: "keep-alive",
     });
-    res.write("event: pong\n\n");
+    res.write("event: pong\n");
+    res.write(`data: ${JSON.stringify({ ping: "pong" })}\n\n`);
 
     const connection = { res, filename: req.query.filename };
     connections.add(connection);
