@@ -9,9 +9,12 @@
     "render": "npm run render:html && npm run render:pdf",
     "render-artifacts": "node scripts/render.js --artifacts && npm run render:pdf",
     "render:html": "node scripts/render.js",
-    "render:pdf": "node scripts/print.js",
+    "render:pdf": "node node_modules/puppeteer-core/install.js && node scripts/print.js",
     "start": "node scripts/dev.js",
     "watch": "node scripts/watch.js"
+  },
+  "config": {
+    "PUPPETEER_PRODUCT": "chrome"
   },
   "dependencies": {
     "@mdx-js/react": "^1.6.14",

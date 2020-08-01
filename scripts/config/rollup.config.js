@@ -6,7 +6,7 @@ import resolve from "@rollup/plugin-node-resolve";
 
 const { MDX_ROOT } = require("../common/constants");
 const languages = require("../../document.config").languages;
-const getMetadata = require("../render/getMetadata");
+const getMetadata = require("../common/getMetadata");
 const {
   staticallyRenderMdxBundle,
   renderHtmlTemplate,
@@ -43,7 +43,7 @@ export default Promise.all(
         format: "cjs",
         exports: "default",
         name: "render",
-        entryFileNames: metadata.htmlOutputFile,
+        entryFileNames: metadata.webOutputFile,
         plugins: [
           {
             name: "staticallyRenderMdxBundle",

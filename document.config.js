@@ -3,17 +3,17 @@ module.exports = {
     nl: {
       dateFormatting: "nl",
       documentTitle: "Het Verslag",
-      htmlOutputFile: "{{documentTitle}}.nederlands.html",
+      webOutputFile: "{{documentTitle}}.nederlands.html",
+      webPageTitle: "{{documentTitle}}",
       printOutputFile:
         "{{documentTitle}} - Nederlands (revisie {{revision}}).pdf",
-      htmlPageTitle: "{{documentTitle}}",
     },
     en: {
       dateFormatting: "en-US",
       documentTitle: "The Report",
-      htmlOutputFile: "{{documentTitle}}.english.html",
+      webOutputFile: "{{documentTitle}}.english.html",
+      webPageTitle: "{{documentTitle}}",
       printOutputFile: "{{documentTitle}} - English (revisie {{revision}}).pdf",
-      htmlPageTitle: "{{documentTitle}}",
     },
   },
   publicUrl: "https://flut1.github.io/open-doc-demo/",
