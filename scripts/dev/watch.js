@@ -37,10 +37,15 @@ class MemoryWatcher extends EventEmitter {
     this.rollupConfig = await loadRollupConfig(
       path.resolve(__dirname, "../config/rollup.config.js")
     );
+    const watchOptions = {
+      persistent: true,
+      usePolling: !!process.env.CODESANDBOX_SSE,
+    };
     this.watcher = chokidar.watch(
       [path.join(TEMPLATE_ROOT, "document.html.mustache")],
-      { persistent: true }
+      watchOptions
     );
+    console.log(`Created file watcher with options ${JSON.stringify(watchOptions)}`);
 
     this.watcher.on("change", () => {
       this.render();
