@@ -55,7 +55,6 @@ class MemoryWatcher extends EventEmitter {
     );
 
     this.watcher.on("change", () => {
-      console.log('CHANGE');
       invalidateConfig();
       this.render();
     });

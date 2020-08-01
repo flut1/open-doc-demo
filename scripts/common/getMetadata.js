@@ -15,7 +15,7 @@ async function getMetadata(language) {
   try {
     lastCommit = await getLastCommit();
   } catch (e) {
-    console.log("Not able to determine last commit");
+    // do nothing
   }
   let revision = "development";
 

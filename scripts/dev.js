@@ -85,6 +85,6 @@ const { STATIC_ROOT } = require("./common/constants");
   });
 
   console.log("Starting dev server...");
-  app.listen(3000);
-  console.log("Dev server listening on port 3000");
+  app.listen(8080);
+  console.log("Dev server listening on port 8080");
 })();
