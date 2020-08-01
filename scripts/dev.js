@@ -1,6 +1,7 @@
 require("core-js/es");
 
 const express = require("express");
+const cors = require("cors");
 const { MemoryWatcher } = require("./dev/watch");
 const { STATIC_ROOT } = require("./common/constants");
 
@@ -30,7 +31,7 @@ const { STATIC_ROOT } = require("./common/constants");
 
   app.use(express.static(STATIC_ROOT));
 
-  app.use("/dev-updates", (req, res) => {
+  app.use("/dev-updates", cors(), (req, res) => {
     res.writeHead(200, {
       "Content-Type": "text/event-stream",
       "Cache-Control": "no-cache",
