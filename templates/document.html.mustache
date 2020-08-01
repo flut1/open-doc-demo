@@ -1,24 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>{{webPageTitle}}</title>
+  <title>{{webPageTitle}}</title>
 
-    <link href="./styles.css" rel="stylesheet" type="text/css" />
+  <link href="./styles.css" rel="stylesheet" type="text/css" />
+
+  {{#devServer}}
+    <style>
+      .dev-status {
+        width: 1vw;
+        height: 1vw;
+        border-radius: .5vw;
+        position: fixed;
+        top: 1vw;
+        right: 1vw;
+        background-color: darkorange;
+        transition: background-color 0.3s;
+      }
+
+      .dev-status.connected {
+        background-color: green;
+      }
+
+      .dev-status.refreshing {
+        background-color: cornflowerblue;
+      }
+
+      .dev-status.error {
+        background-color: darkred;
+      }
+    </style>
+  {{/devServer}}
 </head>
 <body>
 
 {{{content}}}
 
 {{#devServer}}
+<div class="dev-status"></div>
+
 <script type="text/javascript">
+  const statusElement = document.querySelector('.dev-status');
   const sseSource = new EventSource(
     '/dev-updates?filename=' +
     encodeURIComponent(location.pathname.replace(/^\//, ''))
   );
 
+  sseSource.addEventListener('open', () => {
+    statusElement.classList.add('connected');
+    statusElement.classList.remove('error');
+    statusElement.classList.remove('refreshing');
+  });
+
   sseSource.addEventListener('message', () => {
+    statusElement.classList.add('refreshing');
+    statusElement.classList.remove('error');
+    statusElement.classList.remove('connected');
     sseSource.close();
     location.reload();
+  });
+
+  sseSource.addEventListener('error', () => {
+    statusElement.classList.remove('refreshing');
+    statusElement.classList.remove('connected');
+    statusElement.classList.add('error');
   });
 </script>
 {{/devServer}}
