@@ -1,8 +1,10 @@
 const path = require("path");
 const rollup = require("rollup");
+const fs = require("fs-extra");
 const { initialize } = require("../common/output");
 const loadMdxConfigFile = require("rollup/dist/loadConfigFile");
-const {renderIndexHtml} = require("./renderStaticHtml");
+const { OUTPUT_ROOT, STATIC_ROOT } = require("../common/constants");
+const { renderIndexHtml } = require("./renderStaticHtml");
 
 async function renderToDisk() {
   await initialize();
@@ -17,6 +19,7 @@ async function renderToDisk() {
     await bundle.write(optionSet.output[0]);
   }
 
+  await fs.copy(STATIC_ROOT, OUTPUT_ROOT);
   await renderIndexHtml();
 }
 
