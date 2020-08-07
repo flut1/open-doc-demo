@@ -1,7 +1,11 @@
 {
   "name": "open-doc-demo",
   "version": "1.0.0",
+  "bugs": {
+    "url": "https://github.com/flut1/variant-generator/issues"
+  },
   "repository": "git@github.com:flut1/open-doc-demo.git",
+  "author": "Floris Bernard <floris.bernard@gmail.com> (flut1)",
   "main": "index.js",
   "scripts": {
     "fix": "eslint . --ext js,mdx --fix",

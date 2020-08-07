@@ -2,6 +2,7 @@ module.exports = {
   languages: {
     nl: {
       dateFormatting: "nl",
+      languageTag: "nl", // see BCP47 https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang
       documentTitle: "Het Verslag",
       webOutputFile: "{{documentTitle}}.nederlands.html",
       webPageTitle: "{{documentTitle}}",
@@ -10,6 +11,7 @@ module.exports = {
     },
     en: {
       dateFormatting: "en-US",
+      languageTag: "en", // see BCP47 https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/lang
       documentTitle: "The Report",
       webOutputFile: "{{documentTitle}}.english.html",
       webPageTitle: "{{documentTitle}}",

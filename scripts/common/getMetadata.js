@@ -3,6 +3,7 @@ const getLastCommit = util.promisify(require("git-last-commit").getLastCommit);
 const { format: formatDate } = require("date-fns");
 const Mustache = require("mustache");
 const { getConfig } = require("./getConfig");
+const packageJson = require('../../package.json');
 
 async function getMetadata(language) {
   const documentConfig = getConfig();
@@ -29,7 +30,7 @@ async function getMetadata(language) {
     revision = `${revisionDate.toLowerCase()}.${revisionIteration}`;
   }
 
-  const generatedOn = formatDate(
+  const lastChange = formatDate(
     lastCommit
       ? new Date(parseInt(lastCommit.committedOn, 10) * 1000)
       : Date.now(),
@@ -43,8 +44,9 @@ async function getMetadata(language) {
     config: documentConfig,
     lastCommit,
     revision,
-    generatedOn,
+    lastChange,
     language,
+    generatorUrl: `${packageJson.name} ${packageJson.repository}`
   };
 
   const metaMetadata = {
