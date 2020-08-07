@@ -14,15 +14,18 @@ const { getConfig } = require("./common/getConfig");
   const page = await browser.newPage();
   const { languages } = getConfig();
 
+  const metadata = await getMetadata();
   for (const languageKey of Object.keys(languages)) {
     console.log(`Opening output for language "${languageKey}"`);
-    const metadata = await getMetadata(languageKey);
 
     await page.goto(
-      `file://${path.resolve(OUTPUT_ROOT, metadata.webOutputFile)}`
+      `file://${path.resolve(OUTPUT_ROOT, metadata.languages[languageKey].webOutputFile)}`
     );
 
-    const pdfPath = path.resolve(OUTPUT_ROOT, metadata.printOutputFile);
+    const pdfPath = path.resolve(
+      OUTPUT_ROOT,
+      metadata.languages[languageKey].printOutputFile
+    );
     console.log(`Printing pdf to: ${pdfPath}`);
     await page.pdf({
       path: pdfPath,

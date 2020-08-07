@@ -5,6 +5,7 @@ const Mustache = require("mustache");
 const nodeEval = require("node-eval");
 const { html: beautifyHtml } = require("js-beautify");
 const { TEMPLATE_ROOT, MDX_ROOT } = require("../common/constants");
+const getMetadata = require("../common/getMetadata");
 
 async function renderHtmlTemplate(templateName, data) {
   const template = await fs.readFile(
@@ -20,7 +21,12 @@ function staticallyRenderMdxBundle(code, props) {
   return renderFn(props);
 }
 
+async function renderIndexHtml() {
+
+}
+
 module.exports = {
   renderHtmlTemplate,
   staticallyRenderMdxBundle,
+  renderIndexHtml,
 };

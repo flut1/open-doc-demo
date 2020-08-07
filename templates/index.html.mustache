@@ -1,20 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rendered documents</title>
+  <title>{{indexPageTitle}}</title>
+
+  <meta
+      name="generator" content="{{generatorUrl}}"
+      data-commit-hash="{{lastCommit.hash}}"
+      data-last-change="{{lastChange}}"
+      data-revision="{{revision}}"
+  />
 </head>
 <body>
-
-<ul>
-    {{#languages}}
-        <li>
-            <ul>
-                <li>HTML: <a href="./{{{webOutputFile}}}">{{webOutputFile}}</a></li>
-                <li>PRINT: <a href="./{{{printOutputFile}}}">{{printOutputFile}}</a></li>
-            </ul>
-        </li>
-    {{/languages}}
-</ul>
 
 </body>
 </html>

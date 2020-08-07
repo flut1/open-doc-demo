@@ -25,69 +25,71 @@ const renderChunkWithMetadata = (pluginFn, initialMetadata) => {
   };
 };
 
-export default () => {
+export default async () => {
   const { languages } = getConfig();
+  const baseMetadata = await getMetadata();
 
-  return Promise.all(
-    Object.keys(languages).map(async (languageKey) => {
-      const extensions = [
-        ".mjs",
-        ".js",
-        ".jsx",
-        ".md",
-        ".mdx",
-      ].flatMap((ext) => [`.${languageKey}${ext}`, ext]);
-      const metadata = await getMetadata(languageKey);
-      const babelOptions = require("./babel.config");
+  return Object.keys(languages).map((languageKey) => {
+    const extensions = [
+      ".mjs",
+      ".js",
+      ".jsx",
+      ".md",
+      ".mdx",
+    ].flatMap((ext) => [`.${languageKey}${ext}`, ext]);
+    const metadata = {
+      ...baseMetadata,
+      ...baseMetadata.languages[languageKey],
+    };
+    const babelOptions = require("./babel.config");
 
-      return {
-        input: {
-          main: "document/index.jsx",
-        },
-        output: {
-          dir: "output",
-          format: "cjs",
-          exports: "default",
-          name: "render",
-          entryFileNames: metadata.webOutputFile,
-          plugins: [
-            {
-              name: "staticallyRenderMdxBundle",
-              ...renderChunkWithMetadata((code, m) => {
-                return staticallyRenderMdxBundle(code, m);
-              }, metadata),
-              renderChunk(code) {
-                return staticallyRenderMdxBundle(code, metadata);
-              },
-            },
-            {
-              name: "wrapHtml",
-              ...renderChunkWithMetadata((code, m) => {
-                return renderHtmlTemplate("document.html", {
-                  ...m,
-                  content: code,
-                });
-              }, metadata),
-            },
-          ],
-        },
-        inlineDynamicImports: true,
+    return {
+      input: {
+        main: "document/index.jsx",
+      },
+      output: {
+        dir: "output",
+        format: "cjs",
+        exports: "default",
+        name: "render",
+        entryFileNames: metadata.webOutputFile,
         plugins: [
-          mdx({
-            babelOptions,
-          }),
-          resolve({
-            extensions,
-            jail: MDX_ROOT,
-          }),
-          babel({
-            ...babelOptions,
-            babelHelpers: "bundled",
-            exclude: "node_modules/**",
-            extensions: [".js", ".jsx"],
-          }),
+          {
+            name: "staticallyRenderMdxBundle",
+            ...renderChunkWithMetadata((code, m) => {
+              return staticallyRenderMdxBundle(code, m);
+            }, metadata),
+            renderChunk(code) {
+              return staticallyRenderMdxBundle(code, metadata);
+            },
+          },
+          {
+            name: "wrapHtml",
+            ...renderChunkWithMetadata((code, m) => {
+              return renderHtmlTemplate("document.html", {
+                ...m,
+                content: code,
+              });
+            }, metadata),
+          },
         ],
-      };
-    })
-  );
+      },
+      inlineDynamicImports: true,
+      plugins: [
+        mdx({
+          babelOptions,
+        }),
+        resolve({
+          extensions,
+          jail: MDX_ROOT,
+        }),
+        babel({
+          ...babelOptions,
+          babelHelpers: "bundled",
+          exclude: "node_modules/**",
+          extensions: [".js", ".jsx"],
+        }),
+      ],
+    };
+  });
 };

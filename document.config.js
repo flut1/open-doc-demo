@@ -19,4 +19,5 @@ module.exports = {
     },
   },
   publicUrl: "https://flut1.github.io/open-doc-demo/",
+  indexPageTitle: "Open Doc Demo",
 };
