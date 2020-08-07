@@ -2,6 +2,7 @@ const path = require("path");
 const rollup = require("rollup");
 const { initialize } = require("../common/output");
 const loadMdxConfigFile = require("rollup/dist/loadConfigFile");
+const {renderIndexHtml} = require("./renderStaticHtml");
 
 async function renderToDisk() {
   await initialize();
@@ -15,6 +16,8 @@ async function renderToDisk() {
     const bundle = await rollup.rollup(optionSet);
     await bundle.write(optionSet.output[0]);
   }
+
+  await renderIndexHtml();
 }
 
 module.exports = renderToDisk;

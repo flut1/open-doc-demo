@@ -6,6 +6,7 @@ const { getConfig } = require("./getConfig");
 const packageJson = require("../../package.json");
 
 let metadata = null;
+let documentConfig = null;
 
 function generateLanguageMetadata(language, currentData) {
   const languageConfig = currentData.config.languages[language];
@@ -35,14 +36,13 @@ function generateLanguageMetadata(language, currentData) {
   return languageMetadata;
 }
 
-async function generateMetadata() {
+async function generateMetadata(currentDocumentConfig) {
   let lastCommit = null;
   try {
     lastCommit = await getLastCommit();
   } catch (e) {
     // do nothing
   }
-  const documentConfig = getConfig();
 
   let revision = "development";
 
@@ -57,7 +57,7 @@ async function generateMetadata() {
   }
 
   const baseMetadata = {
-    config: documentConfig,
+    config: currentDocumentConfig,
     generatorUrl: `${packageJson.name} ${packageJson.repository}`,
     lastCommit,
     revision,
@@ -65,7 +65,7 @@ async function generateMetadata() {
 
   return {
     languages: Object.fromEntries(
-      Object.keys(documentConfig.languages).map((languageKey) => [
+      Object.keys(currentDocumentConfig.languages).map((languageKey) => [
         languageKey,
         generateLanguageMetadata(languageKey, baseMetadata),
       ])
@@ -75,11 +75,13 @@ async function generateMetadata() {
 }
 
 function getMetadata() {
-  if (metadata) {
+  const currentDocumentConfig = getConfig();
+  if (metadata && documentConfig === currentDocumentConfig) {
     return metadata;
   }
 
-  metadata = generateMetadata();
+  documentConfig = currentDocumentConfig;
+  metadata = generateMetadata(currentDocumentConfig);
   return metadata;
 }
 

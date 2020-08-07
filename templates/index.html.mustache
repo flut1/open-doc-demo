@@ -12,5 +12,13 @@
 </head>
 <body>
 
+{{#languages}}
+<h2>{{documentTitle}} ({{languageTag}})</h2>
+<ul>
+  <li><a href="./{{webOutputFile}}">Webpage</a></li>
+  <li><a href="./{{printOutputFile}}">Print PDF</a></li>
+</ul>
+{{/languages}}
+
 </body>
 </html>
