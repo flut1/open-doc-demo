@@ -51,7 +51,7 @@
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-mdx": "^1.7.1",
     "eslint-plugin-prettier": "^3.1.4",
-    "express": "^4.17.1",
+    "express": "^4.17.3",
     "fs-extra": "^9.0.1",
     "git-last-commit": "^1.0.0",
     "js-beautify": "^1.11.0",
